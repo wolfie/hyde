@@ -1,0 +1,6 @@
+{
+  "camelcase": true,
+  "immed": true,
+  "noarg": true,
+  "node": true
+}

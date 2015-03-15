@@ -1,3 +1,4 @@
+"use strict";
 var openTagRegex = /\\{|({{[\s]*(.+?)[\s]*}})|({%[\s]*(.+?)[\s]*%})/g;
 var _filters = {};
 
@@ -64,7 +65,7 @@ var parseVariable = function(innerTag, outerTag, index, complete, context) {
 		var filterArgs = splitContainingQuotedStrings(argParts[2], ',');
 		filterArgs = filterArgs
 			.map(String.prototype.trim)
-			.map(function(e) {parseValue(e, context)});
+			.map(function(e) {parseValue(e, context);});
 
 		var filter = {
 			name: filterName,
@@ -158,7 +159,7 @@ var parseValue = function(input, context) {
 	};
 
 	var parts = input.split('.');
-	var value = getProperty(context, parts[0])
+	var value = getProperty(context, parts[0]);
 	for (var i=1; i<parts.length && typeof value !== undefined; i++) {
 		value = getProperty(value, parts[i]);
 	}
