@@ -67,11 +67,10 @@ var parseVariable = function(innerTag, outerTag, index, complete, context) {
 			.map(String.prototype.trim)
 			.map(function(e) {parseValue(e, context);});
 
-		var filter = {
-			name: filterName,
-			args: filterArgs
-		};
-		return filter;
+		return {
+            name: filterName,
+            args: filterArgs
+        };
 	});
 
 	var accumulator = parseValue(variableBase, context);
@@ -160,7 +159,7 @@ var parseValue = function(input, context) {
 
 	var parts = input.split('.');
 	var value = getProperty(context, parts[0]);
-	for (var i=1; i<parts.length && typeof value !== undefined; i++) {
+	for (var i=1; i<parts.length && typeof value !== 'undefined'; i++) {
 		value = getProperty(value, parts[i]);
 	}
 
