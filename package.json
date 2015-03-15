@@ -1,0 +1,14 @@
+{
+  "name": "hyde",
+  "version": "1.0.0-alpha",
+  "description": "A blog engine alternative",
+  "author": "Henrik Paul <henrik.paul@gmail.com>",
+  "main": "./index.js",
+  "bin": "./bin.js",
+  "keywords": ["blog","jekyll","liquid"],
+  "preferGlobal": true,
+  "private": true,
+  "dependencies": {
+    "minimist": ">=1.1.1"
+  }
+}
