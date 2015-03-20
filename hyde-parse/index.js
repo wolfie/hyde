@@ -7,6 +7,10 @@ var parse = function(input, context) {
 		context = {};
 	}
 
+    if (typeof input  !== 'string') {
+        input = "";
+    }
+
 	var m;
 	var replacements = [];
 	while ((m = openTagRegex.exec(input)) !== null) {

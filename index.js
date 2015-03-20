@@ -5,6 +5,8 @@ var parse = require("./hyde-parse");
 
 var context = {
     "site": {
+        "targetroot": "",
+        "sourceroot": "",
         "time": new Date()
     }
 };
@@ -49,13 +51,39 @@ var walk = function(dir, done) {
     });
 };
 
-var processFile = function(file) {
-    if (!endsWith(file, ".html")) return;
+// http://stackoverflow.com/revisions/12761924/4
+var deleteFolderRecursive = function(path) {
+    var files = [];
+    if( fs.existsSync(path) ) {
+        files = fs.readdirSync(path);
+        files.forEach(function(file,index){
+            var curPath = path + "/" + file;
+            if(fs.statSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
+};
 
-    consoleWrite("* "+file+"... ");
+var processFile = function(file) {
+    var suffix = /(\.html|\.css|\.md|\.markdown)$/i;
+    if (!suffix.test(file)) return;
+
+    var relativeFile = file.substr(context.site.sourceroot.length);
+    var targetAbsoluteFile = context.site.targetroot+relativeFile;
+    var targetDir = path.dirname(targetAbsoluteFile);
+
+    if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir);
+    }
+
     var text = fs.readFileSync(file, {"encoding": "utf-8"});
-    parse(text, context);
-    consoleWriteln("done");
+    var parsed = parse(text, context);
+
+    fs.writeFileSync(targetAbsoluteFile, parsed);
 };
 
 var entry = function(sourcePath, targetPath) {
@@ -73,6 +101,10 @@ var entry = function(sourcePath, targetPath) {
         process.exit(1);
     }
 
+    context.site.sourceroot = sourcePath;
+    context.site.targetroot = targetPath;
+
+    deleteFolderRecursive(targetPath);
 
     walk(sourcePath, function(err, files) {
         if (err) throw err;
