@@ -1,6 +1,7 @@
 var assertIsString = require('../lib/util.js').assertIsString;
 var assertIsArray = require('../lib/util.js').assertIsArray;
 var assertIsFunction = require('../lib/util.js').assertIsFunction;
+var splitContainingQuotedStrings = require('../lib/util.js').splitContainingQuotedStrings;
 
 var openTagRegex = /\\{|({{[\s]*(.+?)[\s]*}})|({%[\s]*(.+?)[\s]*%})/g;
 
@@ -10,7 +11,7 @@ var _filters = {};
 /**
  * A filter function
  * @callback FilterCallback
- * @param {*} argument
+ * @property {*} argument
  * @returns {*} processed result
  */
 
@@ -18,18 +19,148 @@ var _filters = {};
  * A result of a template replacement.
  *
  * @typedef {object} Result
- * @param {*} result The resulting thing (usually string)
- * @param {number} endIndex The end index of the source string
+ * @property {*} result The resulting thing (usually string)
+ * @property {number} endIndex The end index of the source string
  */
 
 /**
  * Replacement information.
  *
  * @typedef {object} Replacement
- * @param {string} result The text that should be inserted
- * @param {Number} start The start index of the text that should be replaced
- * @param {Number] end The end index of the text that should be replaced
+ * @property {string} result The text that should be inserted
+ * @property {Number} start The start index of the text that should be replaced
+ * @property {Number] end The end index of the text that should be replaced
  */
+
+/**
+ * @param {string} input
+ * @param {Context} context
+ * @returns {*}
+ */
+var parseValue = function (input, context) {
+    if (input.charAt(0) === '"' && input.charAt(input.length - 1) === '"') {
+        return input.substring(1, input.length - 1).replace("\\\"", "\"");
+    }
+
+    if (input.match(/^[0-9]/)) {
+        return parseFloat(input);
+    }
+
+    var getProperty = function (object, property) {
+        if (!object.hasOwnProperty(property)) {
+            throw new Error("No such variable: " + input);
+        }
+        return object[property];
+    };
+
+    var parts = input.split('.');
+    var value = getProperty(context, parts[0]);
+    for (var i = 1; i < parts.length && typeof value !== 'undefined'; i++) {
+        value = getProperty(value, parts[i]);
+    }
+
+    return value;
+};
+
+/**
+ *
+ * @param {string} filterName
+ * @param {*} input
+ * @param {string[]} filterArgs
+ * @returns {*}
+ */
+var executeFilter = function (filterName, input, filterArgs) {
+    assertIsString(filterName);
+    assertIsArray(filterArgs);
+    if (filterName === "") {
+        return input;
+    }
+
+    var filter = _filters[filterName];
+    if (typeof filter !== 'function') {
+        throw "No filter by the name " + filterName;
+    }
+
+    return filter(input, filterArgs);
+};
+
+/**
+ * Parses and processes the contents of a tag
+ *
+ * @param {string} innerTag
+ * @param {string} outerTag
+ * @param {number} index
+ * @param {string} complete
+ * @param {Context} context
+ * @returns {Result}
+ */
+var parseTag = function (innerTag, outerTag, index, complete, context) {
+    console.warn("unimplemented parseTag");
+    return {
+        result: "parseTag(" + innerTag + ")",
+        endIndex: index + outerTag.length
+    };
+};
+
+/**
+ *
+ * @param {string} innerTag
+ * @param {string} outerTag
+ * @param {Number} index
+ * @param {string} complete
+ * @param {Context} context
+ * @returns {Result}
+ */
+var parseVariable = function (innerTag, outerTag, index, complete, context) {
+    assertIsString(innerTag);
+
+    if (typeof outerTag === 'undefined') {
+        outerTag = "{{" + innerTag + "}}";
+    }
+
+    if (typeof index === 'undefined') {
+        index = 0;
+    }
+
+    if (typeof complete === 'undefined') {
+        complete = innerTag;
+    }
+
+    var splits = splitContainingQuotedStrings(innerTag, '|');
+    var variableBase = splits.shift().trim();
+
+    /** @type {{name:string, args:string[]}[]} */
+    var filters = splits.map(function (e) {
+        var argParts = e.match(/^([^:]+)(?::(.*))?$/);
+        var filterName = argParts[1].trim();
+        var filterArgs = splitContainingQuotedStrings(argParts[2], ',');
+        filterArgs = filterArgs
+            .map(String.prototype.trim)
+            .map(function (e) {
+                parseValue(e, context);
+            });
+
+        return {
+            name: filterName,
+            args: filterArgs
+        };
+    });
+
+    var accumulator = parseValue(variableBase, context);
+    for (var i = 0; i < filters.length; i++) {
+        var filter = filters[i];
+        accumulator = executeFilter(filter.name, accumulator, filter.args);
+    }
+
+    if (accumulator === null || typeof accumulator === 'undefined') {
+        accumulator = "";
+    }
+
+    return {
+        endIndex: index + outerTag.length,
+        result: accumulator
+    };
+};
 
 /**
  * Compiles a given string.
@@ -86,7 +217,7 @@ var parse = function (input, context) {
     var cursor = 0;
     var parsed = "";
     replacements.forEach(
-        /** @param {{start:number, result:string, end:number}} replacement */
+        /** @param {Replacement} replacement */
         function (replacement) {
             parsed += input.substring(cursor, replacement.start);
             parsed += replacement.result;
@@ -95,177 +226,6 @@ var parse = function (input, context) {
     parsed += input.substring(cursor, input.length);
 
     return parsed;
-};
-
-/**
- *
- * @param {string} innerTag
- * @param {string} outerTag
- * @param {Number} index
- * @param {string} complete
- * @param {Context} context
- * @returns {Result}
- */
-var parseVariable = function (innerTag, outerTag, index, complete, context) {
-    assertIsString(innerTag);
-
-    if (typeof outerTag === 'undefined')
-        outerTag = "{{" + innerTag + "}}";
-    if (typeof index === 'undefined')
-        index = 0;
-    if (typeof complete === 'undefined')
-        complete = innerTag;
-
-    var splits = splitContainingQuotedStrings(innerTag, '|');
-    var variableBase = splits.shift().trim();
-
-    /** @type {{name:string, args:string[]}[]} */
-    var filters = splits.map(function (e) {
-        var argParts = e.match(/^([^:]+)(?::(.*))?$/);
-        var filterName = argParts[1].trim();
-        var filterArgs = splitContainingQuotedStrings(argParts[2], ',');
-        filterArgs = filterArgs
-            .map(String.prototype.trim)
-            .map(function (e) {
-                parseValue(e, context);
-            });
-
-        return {
-            name: filterName,
-            args: filterArgs
-        };
-    });
-
-    var accumulator = parseValue(variableBase, context);
-    for (var i = 0; i < filters.length; i++) {
-        var filter = filters[i];
-        accumulator = executeFilter(filter.name, accumulator, filter.args);
-    }
-
-    if (accumulator === null || typeof accumulator === 'undefined') {
-        accumulator = "";
-    }
-
-    return {
-        endIndex: index + outerTag.length,
-        result: accumulator
-    };
-};
-
-/**
- * Split a string according to a separator without splitting inside a quoted string bit
- * @param {string} string the string to split
- * @param {string} separator the separator to split with. Its length must be 1
- * @returns {string[]} The parts of the split string
- * @throws {Error} if separator is not one character long.
- */
-var splitContainingQuotedStrings = function (string, separator) {
-    if (string === null || typeof string === "undefined") return [];
-    assertIsString(string);
-    assertIsString(separator);
-    if (separator.length !== 1) {
-        throw new Error("separator must be one character long: was " + separator.length +
-            " (value: " + separator + ")");
-    }
-
-    if (string.indexOf('"') === -1) {
-        return string.split(separator);
-    }
-
-    var splits = [];
-    var insideQuotes = false;
-    var partStart = 0;
-    for (var i = 0; i < string.length; i++) {
-
-        var c = string.charAt(i);
-        var c2 = string.charAt(i + 1);
-        if (c === '\\' && (c2 === '"' || c2 === separator)) {
-            i++;
-        }
-
-        else if (c === '"') {
-            insideQuotes = !insideQuotes;
-        }
-
-        else if (!insideQuotes && c === separator) {
-            splits.push(string.substring(partStart, i));
-            partStart = i + 1;
-        }
-    }
-
-    if (partStart != string.length) {
-        splits.push(string.substring(partStart, string.length));
-    }
-
-    return splits;
-};
-
-/**
- * @param {string} input
- * @param {Context} context
- * @returns {*}
- */
-var parseValue = function (input, context) {
-    if (input.charAt(0) === '"' && input.charAt(input.length - 1) === '"') {
-        return input.substring(1, input.length - 1).replace("\\\"", "\"");
-    }
-
-    if (input.match(/^[0-9]/)) {
-        return parseFloat(input);
-    }
-
-    var getProperty = function (object, property) {
-        if (!object.hasOwnProperty(property)) {
-            throw new Error("No such variable: " + input);
-        }
-        return object[property];
-    };
-
-    var parts = input.split('.');
-    var value = getProperty(context, parts[0]);
-    for (var i = 1; i < parts.length && typeof value !== 'undefined'; i++) {
-        value = getProperty(value, parts[i]);
-    }
-
-    return value;
-};
-
-/**
- *
- * @param {string} filterName
- * @param {*} input
- * @param {string[]} filterArgs
- * @returns {*}
- */
-var executeFilter = function (filterName, input, filterArgs) {
-    assertIsString(filterName);
-    assertIsArray(filterArgs);
-    if (filterName === "") return input;
-
-    var filter = _filters[filterName];
-    if (typeof filter !== 'function') {
-        throw "No filter by the name " + filterName;
-    }
-
-    return filter(input, filterArgs);
-};
-
-/**
- * Parses and processes the contents of a tag
- *
- * @param {string} innerTag
- * @param {string} outerTag
- * @param {number} index
- * @param {string} complete
- * @param {Context} context
- * @returns {Result}
- */
-var parseTag = function (innerTag, outerTag, index, complete, context) {
-    console.warn("unimplemented parseTag");
-    return {
-        result: "parseTag(" + innerTag + ")",
-        endIndex: index + outerTag.length
-    };
 };
 
 /**

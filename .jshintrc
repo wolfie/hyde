@@ -1,6 +1,19 @@
 {
+  "trailing": true,
+  "freeze": true,
+  "white": true,
+  "latedef": true,
   "camelcase": true,
-  "immed": true,
   "noarg": true,
+  "unused": "vars",
+  "eqeqeq": true,
+  "nocomma": true,
+  "nonbsp": true,
+  "bitwise": true,
+  "curly": true,
+  "undef": true,
+  "nonew": true,
+  "forin": true,
+
   "node": true
 }
