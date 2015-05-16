@@ -7,17 +7,17 @@ var assertIsString = require("./lib/util.js").assertIsString;
  * Hyde's predefined constants in a Context
  *
  * @typedef {object} HydeContext
- * @param {string} targetroot
- * @param {string} sourceroot
- * @param {string} currentfile
- * @param {Date} time
+ * @property {string} targetroot
+ * @property {string} sourceroot
+ * @property {string} currentfile
+ * @property {Date} time
  */
 
 /**
  * The context for Hyde processing
  *
  * @typedef {object} Context
- * @param {HydeContext} _hyde
+ * @property {HydeContext} _hyde
  */
 
 /** @type Context */
@@ -48,20 +48,20 @@ var context = {
 var walk = function (dir, done) {
     var results = [];
     fs.readdir(dir, function (err, list) {
-        if (err) return done(err);
+        if (err) { return done(err); }
         var pending = list.length;
-        if (!pending) return done(null, results);
+        if (!pending) { return done(null, results); }
         list.forEach(function (file) {
             file = path.resolve(dir, file);
             fs.stat(file, function (err, stat) {
                 if (stat && stat.isDirectory()) {
                     walk(file, function (err, res) {
                         results = results.concat(res);
-                        if (!--pending) done(null, results);
+                        if (!--pending) { done(null, results); }
                     });
                 } else {
                     results.push(file);
-                    if (!--pending) done(null, results);
+                    if (!--pending) { done(null, results); }
                 }
             });
         });
@@ -98,7 +98,9 @@ var deleteFolderRecursive = function (path) {
  */
 var processFile = function (file) {
     var suffix = /(\.html|\.css|\.md|\.markdown)$/i;
-    if (!suffix.test(file)) return;
+    if (!suffix.test(file)) {
+        return;
+    }
 
     var relativeFile = file.substr(context._hyde.sourceroot.length);
     var targetAbsoluteFile = context._hyde.targetroot + relativeFile;
@@ -123,14 +125,15 @@ var processFile = function (file) {
  * @param {string} targetPath the target path. By default sourcePath+"/_site".
  */
 var entry = function (sourcePath, targetPath) {
-    if (typeof sourcePath === 'undefined' || sourcePath === null)
+    if (typeof sourcePath === 'undefined' || sourcePath === null) {
         sourcePath = process.cwd();
-    else
+    } else {
         assertIsString(sourcePath, "Source path must be a string");
+    }
 
-    if (typeof targetPath === 'undefined' || targetPath === null)
+    if (typeof targetPath === 'undefined' || targetPath === null) {
         targetPath = path.resolve(sourcePath, "_site");
-    else if (typeof targetPath !== 'string') {
+    } else if (typeof targetPath !== 'string') {
         console.error("Target path must be a string");
         process.exit(1);
     }
@@ -141,8 +144,12 @@ var entry = function (sourcePath, targetPath) {
     deleteFolderRecursive(targetPath);
 
     walk(sourcePath, function (err, files) {
-        if (err) throw err;
-        files.forEach(processFile);
+        if (err) { throw err; }
+        files.forEach(function(file) {
+            if (file.indexOf('_') === -1) {
+                processFile(file);
+            }
+        });
     });
 };
 
