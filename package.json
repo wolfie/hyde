@@ -1,6 +1,6 @@
 {
   "name": "hyde",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-dev",
   "description": "A blog engine alternative",
   "author": "Henrik Paul <henrik.paul@gmail.com>",
   "main": "./index.js",
