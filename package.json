@@ -12,9 +12,10 @@
     "minimist": ">=1.1.1"
   },
   "devDependencies": {
-    "jshint": ">=2.6.3"
+    "jshint": ">=2.6.3",
+    "mocha": ">=2.2.5"
   },
   "scripts": {
-    "test": "node_modules/.bin/jshint --verbose index.js bin.js hyde-parse/index.js"
+    "test": "mocha"
   }
 }

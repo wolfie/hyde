@@ -78,7 +78,7 @@ var executeFilter = function (filterName, input, filterArgs) {
 
     var filter = _filters[filterName];
     if (typeof filter !== 'function') {
-        throw "No filter by the name " + filterName;
+        throw new Error("No filter by the name " + filterName);
     }
 
     return filter(input, filterArgs);
@@ -241,9 +241,11 @@ var addFilter = function (name, f) {
 };
 
 addFilter("uppercase", function (e) {
+    assertIsString(e);
     return e.toLocaleUpperCase();
 });
 addFilter("lowercase", function (e) {
+    assertIsString(e);
     return e.toLocaleLowerCase();
 });
 
