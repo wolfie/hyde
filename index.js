@@ -1,7 +1,7 @@
-var fs = require("fs");
-var path = require("path");
-var parse = require("./lib/parser.js");
-var assertIsString = require("./lib/util.js").assertIsString;
+var fs = require('fs');
+var path = require('path');
+var parse = require('./lib/parser.js');
+var assertIsString = require('./lib/util.js').assertIsString;
 
 /**
  * Hyde's predefined constants in a Context
@@ -22,12 +22,12 @@ var assertIsString = require("./lib/util.js").assertIsString;
 
 /** @type Context */
 var context = {
-    "_hyde": {
-        "targetroot": "",
-        "sourceroot": "",
-        "currentfile": "",
-        "time": new Date()
-    }
+  _hyde: {
+    targetroot: '',
+    sourceroot: '',
+    currentfile: '',
+    time: new Date(),
+  },
 };
 
 /**
@@ -39,33 +39,35 @@ var context = {
  */
 
 /**
- * Walk a directory and its subdirectories, and call a method on each of the files within
+ * Walk a directory and its subdirectories, and call a method on each of the
+ * files within
  * <p>
  * Found at http://stackoverflow.com/revisions/5827895/6
+ *
  * @param {string} dir the directory to walk
  * @param {walk~callback} done The function to call on each file
  */
-var walk = function (dir, done) {
-    var results = [];
-    fs.readdir(dir, function (err, list) {
-        if (err) { return done(err); }
-        var pending = list.length;
-        if (!pending) { return done(null, results); }
-        list.forEach(function (file) {
-            file = path.resolve(dir, file);
-            fs.stat(file, function (err, stat) {
-                if (stat && stat.isDirectory()) {
-                    walk(file, function (err, res) {
-                        results = results.concat(res);
-                        if (!--pending) { done(null, results); }
-                    });
-                } else {
-                    results.push(file);
-                    if (!--pending) { done(null, results); }
-                }
-            });
-        });
+var walk = function(dir, done) {
+  var results = [];
+  fs.readdir(dir, function(err, list) {
+    if (err) { return done(err); }
+    var pending = list.length;
+    if (!pending) { return done(null, results); }
+    list.forEach(function(file) {
+      file = path.resolve(dir, file);
+      fs.stat(file, function(err, stat) {
+        if (stat && stat.isDirectory()) {
+          walk(file, function(err, res) {
+            results = results.concat(res);
+            if (!--pending) { done(null, results); }
+          });
+        } else {
+          results.push(file);
+          if (!--pending) { done(null, results); }
+        }
+      });
     });
+  });
 };
 
 /**
@@ -75,20 +77,20 @@ var walk = function (dir, done) {
  *
  * @param {string} path the path to be deleted
  */
-var deleteFolderRecursive = function (path) {
-    var files = [];
-    if (fs.existsSync(path)) {
-        files = fs.readdirSync(path);
-        files.forEach(function (file) {
-            var curPath = path + "/" + file;
-            if (fs.statSync(curPath).isDirectory()) { // recurse
-                deleteFolderRecursive(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
-    }
+var deleteFolderRecursive = function(path) {
+  var files = [];
+  if (fs.existsSync(path)) {
+    files = fs.readdirSync(path);
+    files.forEach(function(file) {
+      var curPath = path + '/' + file;
+      if (fs.statSync(curPath).isDirectory()) { // Recurse
+        deleteFolderRecursive(curPath);
+      } else { // Delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
 };
 
 /**
@@ -96,61 +98,62 @@ var deleteFolderRecursive = function (path) {
  *
  * @param {string} file the path of the file to compile
  */
-var processFile = function (file) {
-    var suffix = /(\.html|\.css|\.md|\.markdown)$/i;
-    if (!suffix.test(file)) {
-        return;
-    }
+var processFile = function(file) {
+  var suffix = /(\.html|\.css|\.md|\.markdown)$/i;
+  if (!suffix.test(file)) {
+    return;
+  }
 
-    var relativeFile = file.substr(context._hyde.sourceroot.length);
-    var targetAbsoluteFile = context._hyde.targetroot + relativeFile;
-    var targetDir = path.dirname(targetAbsoluteFile);
+  var relativeFile = file.substr(context._hyde.sourceroot.length);
+  var targetAbsoluteFile = context._hyde.targetroot + relativeFile;
+  var targetDir = path.dirname(targetAbsoluteFile);
 
-    if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir);
-    }
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir);
+  }
 
-    var text = fs.readFileSync(file, {"encoding": "utf-8"});
+  var text = fs.readFileSync(file, {encoding: 'utf-8'});
 
-    context._hyde.currentfile = relativeFile;
-    var parsed = parse(text, context);
+  context._hyde.currentfile = relativeFile;
+  var parsed = parse(text, context);
 
-    fs.writeFileSync(targetAbsoluteFile, parsed);
+  fs.writeFileSync(targetAbsoluteFile, parsed);
 };
 
 /**
  * Entry point for starting to compile files.
  *
- * @param {string} sourcePath the source path. By default current work directory.
- * @param {string} targetPath the target path. By default sourcePath+"/_site".
+ * @param {string} sourcePath the source path. By default current work
+ *    directory.
+ * @param {string} targetPath the target path. By default sourcePath+'/_site'.
  */
-var entry = function (sourcePath, targetPath) {
-    if (typeof sourcePath === 'undefined' || sourcePath === null) {
-        sourcePath = process.cwd();
-    } else {
-        assertIsString(sourcePath, "Source path must be a string");
-    }
+var entry = function(sourcePath, targetPath) {
+  if (typeof sourcePath === 'undefined' || sourcePath === null) {
+    sourcePath = process.cwd();
+  } else {
+    assertIsString(sourcePath, 'Source path must be a string');
+  }
 
-    if (typeof targetPath === 'undefined' || targetPath === null) {
-        targetPath = path.resolve(sourcePath, "_site");
-    } else if (typeof targetPath !== 'string') {
-        console.error("Target path must be a string");
-        process.exit(1);
-    }
+  if (typeof targetPath === 'undefined' || targetPath === null) {
+    targetPath = path.resolve(sourcePath, '_site');
+  } else if (typeof targetPath !== 'string') {
+    console.error('Target path must be a string');
+    process.exit(1);
+  }
 
-    context._hyde.sourceroot = sourcePath;
-    context._hyde.targetroot = targetPath;
+  context._hyde.sourceroot = sourcePath;
+  context._hyde.targetroot = targetPath;
 
-    deleteFolderRecursive(targetPath);
+  deleteFolderRecursive(targetPath);
 
-    walk(sourcePath, function (err, files) {
-        if (err) { throw err; }
-        files.forEach(function(file) {
-            if (file.indexOf('_') === -1) {
-                processFile(file);
-            }
-        });
+  walk(sourcePath, function(err, files) {
+    if (err) { throw err; }
+    files.forEach(function(file) {
+      if (file.indexOf('_') === -1) {
+        processFile(file);
+      }
     });
+  });
 };
 
 module.exports = entry;
