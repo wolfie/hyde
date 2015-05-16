@@ -68,7 +68,7 @@ describe('A variable', function() {
 		});
 	});
 	
-	describe('with an filter that doesn\'t exist', function() {
+	describe('with a filter that doesn\'t exist', function() {
 		it('should fail', function() {
 			try {
 				parse("{{ \"foo\"|foobar }}");
