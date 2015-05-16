@@ -11,11 +11,13 @@ describe('A variable', function() {
 		assert.equal("foo", result);
         assertIsString(result);
 	});
+	
+	it('should cope with an escaped quote', function() {
+		assert.equal("\"", parse("{{ \"\\\"\" }}"));
+	});
 
     it('should take its value from the context', function() {
-		var context = { 'number': 1 };
-		var result = parse("{{ number }}", context);
-		assert.equal("1", result);
+		assert.equal("1", parse("{{ number }}", { 'number': 1 }));
 	});
 	
 	describe('with lowercase filter', function() {
@@ -75,5 +77,62 @@ describe('A variable', function() {
 				// expected
 			} 
 		});
+	});
+});
+
+var acceptsOnly = function(accepted, f) {
+	util.assertIsFunction(f);
+	util.assertIsString(accepted);
+	
+	var only = function(accepted, trying, f, arg) {
+		var _it = function(desc, f, arg) {
+			it(desc, function(done) {
+				f(arg);
+				done();
+			});
+		};
+		
+		var _but = function(desc, f, arg) {
+			it(desc, function(done) {
+				try {
+					f(arg);
+					assert.fail();
+				} catch (e) {
+					// expected
+					done();
+				}
+			});
+		};
+		
+		if (accepted === trying) {
+			_it("accepts "+trying, f, arg);
+		} else {
+			_but("doesn't accept "+trying, f, arg);
+		}
+	};
+	
+	only(accepted, "strings", f, "string");
+	only(accepted, "functions", f, function() {});
+	only(accepted, "numbers", f, 1);
+	only(accepted, "objects", f, {});
+	only(accepted, "booleans", f, true);
+	only(accepted, "nulls", f, null);
+	only(accepted, "undefineds", f);
+	only(accepted, "arrays", f, []);
+	only(accepted, "array-likes", f, {0: true, 1:true});
+};
+
+describe("Util", function() {
+	describe(".assertIsFunction", function() {
+		acceptsOnly("functions", util.assertIsFunction);
+	});
+	describe(".assertIsString", function() {
+		acceptsOnly("strings", util.assertIsString);
+	});
+	describe(".assertIsArray", function() {
+		acceptsOnly("arrays", util.assertIsArray);
+	});
+	describe(".assertIsNumber", function() {
+		acceptsOnly("numbers", util.assertIsNumber);
 	});
 });
