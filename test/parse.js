@@ -1,5 +1,3 @@
-/* global it */
-/* global describe */
 var assert = require("assert");
 var parse = require("../lib/parser.js");
 var util = require("../lib/util.js");
