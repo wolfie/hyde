@@ -1,6 +1,6 @@
 var fs = require("fs");
 var path = require("path");
-var parse = require("./hyde-parse");
+var parse = require("./lib/parser.js");
 var assertIsString = require("./lib/util.js").assertIsString;
 
 /**
