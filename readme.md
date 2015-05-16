@@ -1,4 +1,4 @@
-![Build status for master branch](https://travis-ci.org/wolfie/hyde.svg?branch=master)
+[![Build status for master branch](https://travis-ci.org/wolfie/hyde.svg?branch=master)](https://travis-ci.org/wolfie/hyde)
 
 # Hyde - A Website Compiler
 
