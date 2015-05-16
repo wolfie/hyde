@@ -16,5 +16,7 @@
   "forin": true,
   "mocha": true,
 
-  "node": true
+  "node": true,
+  
+  "predef": ["-context"] /* https://github.com/jshint/jshint/issues/2229 */
 }

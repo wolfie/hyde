@@ -69,11 +69,11 @@ describe('A variable', function() {
 	describe('with an filter that doesn\'t exist', function() {
 		it('should fail', function() {
 			try {
-				parse("{{ \"foo\"|foobar }}")
+				parse("{{ \"foo\"|foobar }}");
 				assert.fail();
 			} catch (e) {
 				// expected
 			} 
-		})
-	})
+		});
+	});
 });
