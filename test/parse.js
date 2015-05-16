@@ -135,4 +135,36 @@ describe("Util", function() {
 	describe(".assertIsNumber", function() {
 		acceptsOnly("numbers", util.assertIsNumber);
 	});
+	
+	describe(".splitContainingQuotedStrings", function() {
+		var split = util.splitContainingQuotedStrings;
+		it("returns itself arrayed if nothing is split", function() {
+			assert.deepEqual(["string"], split("string", "."));
+		});
+		
+		it("splits as expected without quotes", function() {
+			assert.deepEqual(["hello", "world"], split("hello world", " "));
+		});
+		
+		it("doesn't choke on quotes without a split", function() {
+			assert.deepEqual(
+				["hello", "\"world\""],
+				split("hello \"world\"", " ")
+			);
+		});
+		
+		it("keeps quoted sections togehter", function() {
+			assert.deepEqual(
+				["hello", "\"Hello World\"", "world"],
+				split("hello \"Hello World\" world", " ")
+			);
+		});
+		
+		it("works with two quoted sections", function() {
+			assert.deepEqual(
+				["\"hello world\"", "\"hello world\""],
+				split("\"hello world\" \"hello world\"", " ")
+			);
+		});
+	});
 });
