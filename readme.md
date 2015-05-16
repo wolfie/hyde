@@ -1,3 +1,5 @@
+![Build status for master branch](https://travis-ci.org/wolfie/hyde.svg?branch=master)
+
 # Hyde - A Website Compiler
 
 Insert actual readme here.
@@ -22,3 +24,5 @@ If `template` is undefined, use following logic for a file `foo/page.html`
 1. _template.html
 
 ## Processing `_things`
+
+TBD
