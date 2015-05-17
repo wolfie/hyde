@@ -98,5 +98,12 @@ describe('Util', function() {
         ['"hello world"', '"hello world"']
       );
     });
+
+    it('works with longer split points', function() {
+      assert.deepEqual(
+          split('hello || world'),
+          ['hello ', ' world']
+      );
+    });
   });
 });
