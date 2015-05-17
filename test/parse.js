@@ -41,6 +41,10 @@ describe('A variable', function() {
     assertParse('{{ "\\"" }}', '"');
   });
 
+  it('should cope with closing braces in string', function() {
+    assertParse('{{ "}}" }}', '}}');
+  });
+
   it('should take its value from the context', function() {
     assertParse('{{ number }}', '1', { number: 1 });
   });
