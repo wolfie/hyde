@@ -16,8 +16,7 @@
 
 var assert = require('assert');
 var parse = require('../lib/parser.js');
-var util = require('../lib/util.js');
-var assertIsString = util.assertIsString;
+var assertIsString =  require('../lib/util.js').assertIsString;
 
 var assertParse = function(input, expected, context) {
   assertIsString(input);
