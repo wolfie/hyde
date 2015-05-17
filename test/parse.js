@@ -38,6 +38,10 @@ describe('A variable', function() {
     assertIsString(result);
   });
 
+  it('should cope with a closing tag inside quotes', function() {
+    assertParse('{{ "}}" }}', '}}');
+  });
+
   it('should cope with an escaped quote', function() {
     assertParse('{{ "\\"" }}', '"');
   });
@@ -54,11 +58,17 @@ describe('A variable', function() {
     it('should be lowercase', function() {
       assertParse('{{ "Foo"|lowercase }}', 'foo');
     });
+    it('should accept non-strings', function() {
+      assertParse('{{ var|lowercase }}', '1', {var: 1});
+    });
   });
 
   describe('with uppercase filter', function() {
     it('should be uppercase', function() {
       assertParse('{{ "Foo"|uppercase }}', 'FOO');
+    });
+    it('should accept non-strings', function() {
+      assertParse('{{ var|uppercase }}', '1', {var: 1});
     });
   });
 
