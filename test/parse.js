@@ -38,10 +38,6 @@ describe('A variable', function() {
     assertIsString(result);
   });
 
-  it('should cope with a closing tag inside quotes', function() {
-    assertParse('{{ "}}" }}', '}}');
-  });
-
   it('should cope with an escaped quote', function() {
     assertParse('{{ "\\"" }}', '"');
   });
