@@ -49,6 +49,10 @@ describe('A variable', function() {
     assertParseThrows('{{ foo }}');
   });
 
+  it('should be escaped with a backslash', function() {
+    assertParse('\\{{ "foo" }}', '{{ "foo" }}');
+  });
+
   describe('with lowercase filter', function() {
     it('should be lowercase', function() {
       assertParse('{{ "Foo"|lowercase }}', 'foo');
