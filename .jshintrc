@@ -16,7 +16,5 @@
   "forin": true,
   "mocha": true,
 
-  "node": true,
-  
-  "predef": ["-context"]
+  "node": true
 }

@@ -32,12 +32,12 @@ var assertIsString = require('./lib/util.js').assertIsString;
 /**
  * The context for Hyde processing
  *
- * @typedef {object} Context
+ * @typedef {object} ParseContext
  * @property {HydeContext} _hyde
  */
 
-/** @type Context */
-var context = {
+/** @type ParseContext */
+var parseContext = {
   _hyde: {
     targetroot: '',
     sourceroot: '',
@@ -120,8 +120,8 @@ var processFile = function(file) {
     return;
   }
 
-  var relativeFile = file.substr(context._hyde.sourceroot.length);
-  var targetAbsoluteFile = context._hyde.targetroot + relativeFile;
+  var relativeFile = file.substr(parseContext._hyde.sourceroot.length);
+  var targetAbsoluteFile = parseContext._hyde.targetroot + relativeFile;
   var targetDir = path.dirname(targetAbsoluteFile);
 
   if (!fs.existsSync(targetDir)) {
@@ -130,8 +130,8 @@ var processFile = function(file) {
 
   var text = fs.readFileSync(file, {encoding: 'utf-8'});
 
-  context._hyde.currentfile = relativeFile;
-  var parsed = parse(text, context);
+  parseContext._hyde.currentfile = relativeFile;
+  var parsed = parse(text, parseContext);
 
   fs.writeFileSync(targetAbsoluteFile, parsed);
 };
@@ -157,8 +157,8 @@ var entry = function(sourcePath, targetPath) {
     process.exit(1);
   }
 
-  context._hyde.sourceroot = sourcePath;
-  context._hyde.targetroot = targetPath;
+  parseContext._hyde.sourceroot = sourcePath;
+  parseContext._hyde.targetroot = targetPath;
 
   deleteFolderRecursive(targetPath);
 
