@@ -19,6 +19,18 @@ var parse = require('../lib/parser.js');
 var util = require('../lib/util.js');
 var assertIsString = util.assertIsString;
 
+var assertParse = function(input, expected, context) {
+  assertIsString(input);
+  assertIsString(expected);
+  assert.equal(parse(input, context), expected);
+};
+
+var assertParseThrows = function(input, context) {
+  assert.throws(function() {
+    assertParse(input, '', context);
+  });
+};
+
 describe('A variable', function() {
   it('should be itself if in quoted format', function() {
     var result = parse('{{ "foo" }}');
@@ -27,36 +39,32 @@ describe('A variable', function() {
   });
 
   it('should cope with an escaped quote', function() {
-    assert.equal(parse('{{ "\\"" }}'), '"');
+    assertParse('{{ "\\"" }}', '"');
   });
 
   it('should take its value from the context', function() {
-    assert.equal(parse('{{ number }}', { number: 1 }), '1');
+    assertParse('{{ number }}', '1', { number: 1 });
   });
 
   it('should fail variable is not in context', function() {
-    assert.throws(function() {
-      parse('{{ foo }}');
-    });
+    assertParseThrows('{{ foo }}');
   });
 
   describe('with lowercase filter', function() {
     it('should be lowercase', function() {
-      assert.equal(parse('{{ "Foo"|lowercase }}'), 'foo');
+      assertParse('{{ "Foo"|lowercase }}', 'foo');
     });
   });
 
   describe('with uppercase filter', function() {
     it('should be uppercase', function() {
-      assert.equal(parse('{{ "Foo"|uppercase }}'), 'FOO');
+      assertParse('{{ "Foo"|uppercase }}', 'FOO');
     });
   });
 
   describe('with a filter that doesn\'t exist', function() {
     it('should fail', function() {
-      assert.throws(function() {
-        parse('{{ "foo"|foobar }}');
-      });
+      assertParseThrows('{{ "foo"|foobar }}');
     });
   });
 });
