@@ -49,7 +49,7 @@ var parseContext = {
 /**
  * The walk function's callback
  *
- * @callback walk~callback
+ * @callback WalkCallback
  * @param {Error} err error object
  * @param {string[]} results the paths of all files that were found
  */
@@ -61,7 +61,7 @@ var parseContext = {
  * Found at http://stackoverflow.com/revisions/5827895/6
  *
  * @param {string} dir the directory to walk
- * @param {walk~callback} done The function to call on each file
+ * @param {WalkCallback} done The function to call on each file
  */
 var walk = function(dir, done) {
   var results = [];
