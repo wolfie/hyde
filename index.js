@@ -91,21 +91,21 @@ var walk = function(dir, done) {
  * <p>
  * Found at http://stackoverflow.com/revisions/12761924/4
  *
- * @param {string} path the path to be deleted
+ * @param {string} dir the directory to be deleted
  */
-var deleteFolderRecursive = function(path) {
+var deleteDirectoryRecursive = function(dir) {
   var files = [];
-  if (fs.existsSync(path)) {
-    files = fs.readdirSync(path);
+  if (fs.existsSync(dir)) {
+    files = fs.readdirSync(dir);
     files.forEach(function(file) {
       var curPath = path + '/' + file;
       if (fs.statSync(curPath).isDirectory()) { // Recurse
-        deleteFolderRecursive(curPath);
+        deleteDirectoryRecursive(curPath);
       } else { // Delete file
         fs.unlinkSync(curPath);
       }
     });
-    fs.rmdirSync(path);
+    fs.rmdirSync(dir);
   }
 };
 
@@ -160,7 +160,7 @@ var entry = function(sourcePath, targetPath) {
   parseContext._hyde.sourceroot = sourcePath;
   parseContext._hyde.targetroot = targetPath;
 
-  deleteFolderRecursive(targetPath);
+  deleteDirectoryRecursive(targetPath);
 
   walk(sourcePath, function(err, files) {
     if (err) { throw err; }
