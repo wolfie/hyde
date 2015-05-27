@@ -101,7 +101,7 @@ describe('Util', function() {
 
     it('works with longer split points', function() {
       assert.deepEqual(
-          split('hello || world'),
+          split('hello || world', '||'),
           ['hello ', ' world']
       );
     });
