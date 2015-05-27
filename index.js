@@ -98,7 +98,7 @@ var deleteDirectoryRecursive = function(dir) {
   if (fs.existsSync(dir)) {
     files = fs.readdirSync(dir);
     files.forEach(function(file) {
-      var curPath = path + '/' + file;
+      var curPath = dir + path.sep + file;
       if (fs.statSync(curPath).isDirectory()) { // Recurse
         deleteDirectoryRecursive(curPath);
       } else { // Delete file
