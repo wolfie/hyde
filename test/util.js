@@ -70,12 +70,33 @@ describe('Util', function() {
 
   describe('.splitContainingQuotedStrings', function() {
     var split = util.splitContainingQuotedStrings;
+    it('rejects a splitter containing a quote', function() {
+      assert.throws(function() {
+        split('', '"');
+      });
+    });
+
     it('returns itself arrayed if nothing is split', function() {
       assert.deepEqual(split('string', '.'), ['string']);
     });
 
+    it('returns itself arrayed if nothing is split even with a quote',
+        function() {assert.deepEqual(split('str"ing', '.'), ['str"ing']);});
+
+    it('returns itself arrayed if nothing is split even with a quote',
+        function() {assert.deepEqual(split('str\\"ing', '.'), ['str"ing']);});
+
     it('splits as expected without quotes', function() {
       assert.deepEqual(split('hello world', ' '), ['hello', 'world']);
+    });
+
+    it('escapes quotes properly', function() {
+      assert.deepEqual(split('\\"hello world\\"', ' '),
+          ['"hello', 'world"']);
+    });
+
+    it('doesn\'t allow for escaping the splitter', function() {
+      assert.deepEqual(split('hello\\ world', ' '), ['hello\\', 'world']);
     });
 
     it('doesn\'t choke on quotes without a split', function() {
