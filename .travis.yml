@@ -1,4 +1,4 @@
 language: node_js
 node_js:
   - "0.12"
-  - "iojs"
+  - "iojs-v2.1.0" # 2.2.0 has a SSL problem that fails the build
