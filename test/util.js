@@ -83,7 +83,7 @@ describe('Util', function() {
     it('returns itself arrayed if nothing is split even with a quote',
         function() {assert.deepEqual(split('str"ing', '.'), ['str"ing']);});
 
-    it('returns itself arrayed if nothing is split even with a quote',
+    it('returns itself arrayed if nothing is split even with an escaped quote',
         function() {assert.deepEqual(split('str\\"ing', '.'), ['str"ing']);});
 
     it('splits as expected without quotes', function() {
