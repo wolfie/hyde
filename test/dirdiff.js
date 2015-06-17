@@ -34,7 +34,7 @@ describe('dirdiff', function() {
   };
 
   it('works when source and target are the same', function(done) {
-    diff(__dirname, __dirname, assertNoDifferences(done));
+    diff(pathA, pathA, assertNoDifferences(done));
   });
 
   it('correctly detects no file-level differences', function(done) {
