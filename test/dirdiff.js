@@ -21,6 +21,7 @@ var path = require('path');
 var pathDirdff = __dirname + path.sep + 'dirdiff';
 var pathA = pathDirdff + path.sep + 'a';
 var pathB = pathDirdff + path.sep + 'b';
+var pathC = pathDirdff + path.sep + 'c';
 
 describe('dirdiff', function() {
   var assertNoDifferences = function(done) {
@@ -38,5 +39,21 @@ describe('dirdiff', function() {
 
   it('correctly detects no file-level differences', function(done) {
     diff(pathA, pathB, assertNoDifferences(done));
+  });
+
+  it('notices a missing file', function(done) {
+    diff(pathA, pathC, function(common, missing, extra) {
+      assert.ok(common.indexOf('somefile.txt') === -1);
+      assert.ok(missing.indexOf('somefile.txt') !== -1);
+      done();
+    });
+  });
+
+  it('notices an extra file', function(done) {
+    diff(pathC, pathA, function(common, missing, extra) {
+      assert.ok(common.indexOf('somefile.txt') === -1);
+      assert.ok(extra.indexOf('somefile.txt') !== -1);
+      done();
+    });
   });
 });
