@@ -25,10 +25,10 @@ var pathC = pathDirdff + path.sep + 'c';
 
 describe('dirdiff', function() {
   var assertNoDifferences = function(done) {
-    return function(common, missing, extra) {
-      assert.ok(common.length > 0);
-      assert.ok(missing.length === 0);
-      assert.ok(extra.length === 0);
+    return function(result) {
+      assert.ok(result.common.length > 0);
+      assert.ok(result.missing.length === 0);
+      assert.ok(result.extra.length === 0);
       done();
     };
   };
@@ -42,17 +42,17 @@ describe('dirdiff', function() {
   });
 
   it('notices a missing file', function(done) {
-    diff(pathA, pathC, function(common, missing, extra) {
-      assert.ok(common.indexOf('somefile.txt') === -1);
-      assert.ok(missing.indexOf('somefile.txt') !== -1);
+    diff(pathA, pathC, function(result) {
+      assert.ok(result.common.indexOf('somefile.txt') === -1);
+      assert.ok(result.missing.indexOf('somefile.txt') !== -1);
       done();
     });
   });
 
   it('notices an extra file', function(done) {
-    diff(pathC, pathA, function(common, missing, extra) {
-      assert.ok(common.indexOf('somefile.txt') === -1);
-      assert.ok(extra.indexOf('somefile.txt') !== -1);
+    diff(pathC, pathA, function(result) {
+      assert.ok(result.common.indexOf('somefile.txt') === -1);
+      assert.ok(result.extra.indexOf('somefile.txt') !== -1);
       done();
     });
   });
