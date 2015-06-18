@@ -1,0 +1,1 @@
+This is a file that is identical in both /a/ab-same.txt and /b/ab-same.txt

@@ -43,16 +43,16 @@ describe('dirdiff', function() {
 
   it('notices a missing file', function(done) {
     diff(pathA, pathC, function(result) {
-      assert.ok(result.common.indexOf('somefile.txt') === -1);
-      assert.ok(result.missing.indexOf('somefile.txt') !== -1);
+      assert.ok(result.common.indexOf('ab-same.txt') === -1);
+      assert.ok(result.missing.indexOf('ab-same.txt') !== -1);
       done();
     });
   });
 
   it('notices an extra file', function(done) {
     diff(pathC, pathA, function(result) {
-      assert.ok(result.common.indexOf('somefile.txt') === -1);
-      assert.ok(result.extra.indexOf('somefile.txt') !== -1);
+      assert.ok(result.common.indexOf('ab-same.txt') === -1);
+      assert.ok(result.extra.indexOf('ab-same.txt') !== -1);
       done();
     });
   });
