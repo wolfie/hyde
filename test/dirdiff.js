@@ -115,6 +115,7 @@ describe('dirdiff', function() {
       var diff = getContentDiff(diffedFile, result);
       assert.ok(diff === null,
           diffedFile + ' is wrongly claimed to have differences');
+      done();
     });
   });
 });
