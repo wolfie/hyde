@@ -1,4 +1,5 @@
 node_modules/
+test/test-site/source/_site/
 
 # Windows image file caches
 Thumbs.db
