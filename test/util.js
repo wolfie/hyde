@@ -29,6 +29,7 @@ var itAcceptsOnly = function(accepted, f) {
 
   var _but = function(desc, f, arg) {
     it(desc, function() {
+      //noinspection JSCheckFunctionSignatures
       assert.throws(function() {
         f(arg);
       });
@@ -71,6 +72,7 @@ describe('Util', function() {
   describe('.splitContainingQuotedStrings', function() {
     var split = util.splitContainingQuotedStrings;
     it('rejects a splitter containing a quote', function() {
+      //noinspection JSCheckFunctionSignatures
       assert.throws(function() {
         split('', '"');
       });

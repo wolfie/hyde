@@ -25,6 +25,7 @@ var assertParse = function(input, expected, context) {
 };
 
 var assertParseThrows = function(input, context) {
+  //noinspection JSCheckFunctionSignatures
   assert.throws(function() {
     assertParse(input, '', context);
   });

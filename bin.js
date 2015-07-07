@@ -44,7 +44,10 @@ var arg = function() {
   var value = null;
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i];
-    if (!value) { value = argv.hasOwnProperty(arg) ? argv[arg] : null; }
+    if (!value) {
+      //noinspection JSUnresolvedFunction
+      value = argv.hasOwnProperty(arg) ? argv[arg] : null;
+    }
     delete argv[arg];
   }
   return value;
@@ -53,6 +56,7 @@ var arg = function() {
 var checkUnprocessedArguments = function() {
   var unprocessed = [];
   for (var prop in argv) {
+    //noinspection JSUnresolvedFunction
     if (argv.hasOwnProperty(prop) && prop !== '_') {
       unprocessed.push(prop);
     }

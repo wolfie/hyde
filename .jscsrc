@@ -3,5 +3,11 @@
   "excludeFiles": [
     "node_modules/**"
   ],
-  "requireLineFeedAtFileEnd": true
+  "requireLineFeedAtFileEnd": true,
+  "requireCapitalizedComments": {
+    "allExcept": ["noinspection"]
+  },
+  "requireSpaceAfterLineComment": {
+    "allExcept": ["noinspection"]
+  }
 }
