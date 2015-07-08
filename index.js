@@ -126,7 +126,7 @@ var entry = function(sourcePath, targetPath) {
   walk(sourcePath, function(err, files) {
     if (err) { throw err; }
     files.forEach(function(file) {
-      if (file.indexOf('_') === -1) {
+      if (path.basename(file).indexOf('_') !== 0) {
         processFile(file);
       }
     });
