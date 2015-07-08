@@ -20,14 +20,3 @@ Insert actual readme here.
 
 * `touppercase` - `[any -> string]` Converts the input into an uppercase string
 * `tolowercase` - `[any -> string]` Converts the input into an lowercase string
-
-## Finding a suitable `_template`
-
-If `template` is undefined, use following logic for a file `foo/page.html`
-
-1. foo/_template.html
-1. _template.html
-
-## Processing `_things`
-
-TBD
