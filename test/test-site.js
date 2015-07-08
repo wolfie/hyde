@@ -26,25 +26,30 @@ var precompiledPath = testSite + path.sep + 'target';
 
 describe('Hyde', function() {
   it('should compile the source to match the target', function(done) {
-    hyde(sourcePath, targetPath);
-    dirdiff(targetPath, precompiledPath, function(result) {
+    hyde(sourcePath, targetPath, function(err) {
+      if (err) {
+        throw err;
+      }
 
-      /*
-       * This error reporting definitely could use some more detailed error
-       * reporting. This is a minimal implementation that should do for now...
-       */
+      dirdiff(targetPath, precompiledPath, function(result) {
 
-      assert.ok(result.pathnames.extra.length === 0,
-          'some extra files were found');
-      assert.ok(result.pathnames.missing.length === 0,
-          'some files were missing');
-      result.contents.forEach(function(file) {
-        file.diffs.forEach(function(contentDiff) {
-          assert.ok(!contentDiff.added, 'something was added in ' + file);
-          assert.ok(!contentDiff.removed, 'something was removed in ' + file);
+        /*
+         * This error reporting definitely could use some more detailed error
+         * reporting. This is a minimal implementation that should do for now...
+         */
+
+        assert.ok(result.pathnames.extra.length === 0,
+            'some extra files were found');
+        assert.ok(result.pathnames.missing.length === 0,
+            'some files were missing');
+        result.contents.forEach(function(file) {
+          file.diffs.forEach(function(contentDiff) {
+            assert.ok(!contentDiff.added, 'something was added in ' + file);
+            assert.ok(!contentDiff.removed, 'something was removed in ' + file);
+          });
         });
+        done();
       });
-      done();
     });
   });
 });

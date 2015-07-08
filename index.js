@@ -98,13 +98,21 @@ var processFile = function(file) {
 };
 
 /**
+ * @callback HydeCallback
+ * @param  {?Error} err an Error object, or undefined if no error was found.
+ */
+
+/**
  * Entry point for starting to compile files.
  *
  * @param {string} sourcePath the source path. By default current work
  *    directory.
  * @param {string} targetPath the target path. By default sourcePath+'/_site'.
+ * @param {HydeCallback} callback a function called when the execution for Hyde
+ *    is done. Has an error parameter if an error was encountered during
+ *    execution
  */
-var entry = function(sourcePath, targetPath) {
+var entry = function(sourcePath, targetPath, callback) {
   if (typeof sourcePath === 'undefined' || sourcePath === null) {
     sourcePath = process.cwd();
   } else {
@@ -121,15 +129,17 @@ var entry = function(sourcePath, targetPath) {
   parseContext._hyde.sourceroot = sourcePath;
   parseContext._hyde.targetroot = targetPath;
 
+  // TODO this could be async'd
   deleteDirectoryRecursive(targetPath);
 
   walk(sourcePath, function(err, files) {
-    if (err) { throw err; }
+    if (err) { callback(err); }
     files.forEach(function(file) {
       if (path.basename(file).indexOf('_') !== 0) {
         processFile(file);
       }
     });
+    callback();
   });
 };
 

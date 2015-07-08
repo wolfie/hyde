@@ -79,5 +79,7 @@ if (showVersion) {
 } else if (showHelp) {
   console.log(help.join('\n'));
 } else {
-  hyde(sourcePath, targetPath);
+  hyde(sourcePath, targetPath, function(err) {
+    if (err) { throw err; }
+  });
 }
