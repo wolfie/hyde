@@ -25,7 +25,7 @@ var targetPath = sourcePath + path.sep + '_site';
 var precompiledPath = testSite + path.sep + 'target';
 
 describe('Hyde', function() {
-  it('should compile the source to match the target', function() {
+  it('should compile the source to match the target', function(done) {
     hyde(sourcePath, targetPath);
     dirdiff(targetPath, precompiledPath, function(result) {
 
@@ -44,6 +44,7 @@ describe('Hyde', function() {
           assert.ok(!contentDiff.removed, 'something was removed in ' + file);
         });
       });
+      done();
     });
   });
 });

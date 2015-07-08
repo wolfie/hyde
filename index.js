@@ -94,7 +94,7 @@ var processFile = function(file) {
   parseContext._hyde.currentfile = relativeFile;
   var parsed = parse(text, parseContext);
 
-  fs.writeFileSync(targetAbsoluteFile, parsed);
+  fs.writeFileSync(targetAbsoluteFile, parsed, {encoding: 'utf-8'});
 };
 
 /**
